@@ -1,0 +1,150 @@
+﻿<Window x:Class="FacultyManagement.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FacultyManagement.ViewModel"
+        xmlns:convert="clr-namespace:FacultyManagement.Converters"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        MinHeight="600"
+        MinWidth="500"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <local:MainWindowVM/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="30"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="1" Grid.Column="1"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel.Resources>
+                <convert:StudentConvert x:Key="studentConvert"/>
+            </StackPanel.Resources>
+
+            <WrapPanel Margin="0,10,0,0">
+                <Label Width="150" FontSize="15">Student ID:</Label>
+                <TextBox Name="txtStudentID" Width="200" Text="{Binding ElementName=dataGrid, 
+                Path=SelectedItem.StudentId, UpdateSourceTrigger=PropertyChanged}"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0">
+                <Label Width="150" FontSize="15">Group ID:</Label>
+                <TextBox Name="txtGroupID" Width="200" Text="{Binding ElementName=dataGrid, 
+                Path=SelectedItem.GroupId, UpdateSourceTrigger=PropertyChanged}"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0">
+                <Label Width="150" FontSize="15">First name:</Label>
+                <TextBox Name="txtFirstName" Width="200" Text="{Binding ElementName=dataGrid, 
+                Path=SelectedItem.FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0">
+                <Label Width="150" FontSize="15">Last name:</Label>
+                <TextBox Name="txtLastName" Width="200" Text="{Binding ElementName=dataGrid, 
+                Path=SelectedItem.LastName, UpdateSourceTrigger=PropertyChanged}"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0">
+                <Label Width="150" FontSize="15">Cnp:</Label>
+                <TextBox Name="txtCnp" Width="200" Text="{Binding ElementName=dataGrid, 
+                Path=SelectedItem.Cnp, UpdateSourceTrigger=PropertyChanged}"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0">
+                <Label Width="150" FontSize="15">Email:</Label>
+                <TextBox Name="txtEmail" Width="200" Text="{Binding ElementName=dataGrid, 
+                Path=SelectedItem.Email, UpdateSourceTrigger=PropertyChanged}"/>
+            </WrapPanel>
+            <WrapPanel>
+                <Button Content="Add" Margin="15" Width="100" Height="30" 
+                    Command="{Binding AddCommand}">
+                    <Button.CommandParameter>
+                        <MultiBinding Converter="{StaticResource studentConvert}">
+                            <Binding ElementName="txtStudentID" Path="Text"/>
+                            <Binding ElementName="txtGroupID" Path="Text"/>
+                            <Binding ElementName="txtFirstName" Path="Text"/>
+                            <Binding ElementName="txtLastName" Path="Text"/>
+                            <Binding ElementName="txtCnp" Path="Text"/>
+                            <Binding ElementName="txtEmail" Path="Text"/>
+
+                        </MultiBinding>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="Modify" Margin="15" Width="100" Height="30" Command="{Binding UpdateCommand}"
+                    CommandParameter="{Binding SelectedItem, ElementName=dataGrid}">
+                    <Button.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding ="{Binding ElementName=dataGrid, Path=SelectedIndex}" 
+                                     Value="-1">
+                                    <Setter Property="Button.IsEnabled" 
+                                    Value="false"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Delete" Margin="15" Width="100" Height="30" Command="{Binding DeleteCommand}"
+                    CommandParameter="{Binding SelectedItem, ElementName=dataGrid}">
+                    <Button.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding ="{Binding ElementName=dataGrid, Path=SelectedIndex}" 
+                                     Value="-1">
+                                    <Setter Property="Button.IsEnabled" 
+                                    Value="false"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </WrapPanel>
+        </StackPanel>
+
+        <DataGrid Name="dataGrid"
+                  Grid.Row="3" Grid.Column="1"
+                  SelectionMode="Single"
+                  ItemsSource="{Binding Path=StudentList}" 
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  SelectedItem="{Binding Path=SelectedStudent}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Student ID" Binding="{Binding StudentId}"/>
+                <DataGridTextColumn Header="Group ID" Binding="{Binding GroupId}"/>
+                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}"/>
+                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}"/>
+                <DataGridTextColumn Header="CNP" Binding="{Binding Cnp}"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}"/>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Row="4" Grid.Column="1"
+                Width="150" Height="35"
+                Content="View student's notes page"
+                Command="{Binding Path=ViewNotesCommand}">
+            <Button.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding ="{Binding ElementName=dataGrid, Path=SelectedIndex}" 
+                                     Value="-1">
+                            <Setter Property="Button.IsEnabled" 
+                                    Value="false"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+    </Grid>
+</Window>
